@@ -24,7 +24,7 @@ def blocks(s: str):
     mermaid = len(re.findall(r"^\s*(```|~~~)\s*mermaid", s, re.M))
     body = CODE.sub(" ", s)
     heads = [(len(m.group(1)), m.group(0)) for m in re.finditer(r"^(#{1,6})\s+.*$", body, re.M)]
-    quotes = len(re.findall(r'^\s*>\s*"', body, re.M))
+    quotes = len(re.findall(r'^\s*>\s*["“]', body, re.M))   # Chinese quote marks are fine
     tables = len(re.findall(r"(?:Table source:|表格来源：)", body))
     figs = re.findall(r"!\[[^\]]*\]\(([^)\s]+)\)", body)
     math = MATH.findall(body)
@@ -32,11 +32,24 @@ def blocks(s: str):
     return code, heads, quotes, tables, figs, math, links, body, mermaid
 
 
+def drop_list_markers(t: str) -> str:
+    """Remove "3. " at the start of a list item: after a blank line, another item, or an indented continuation line.
+    A prose line that merely wraps before "256. The …" keeps its number."""
+    out, prev = [], ""
+    for line in t.split("\n"):
+        m = re.match(r"(\s*)\d+\.\s", line)
+        if m and (not prev.strip() or re.match(r"\s*\d+\.\s", prev) or prev[:1].isspace()):
+            line = m.group(1) + " " + line[m.end():]
+        out.append(line)
+        prev = line if not m else "1. "
+    return "\n".join(out)
+
+
 def numbers(body: str) -> Counter:
     t = MATH.sub(" ", body)
     t = re.sub(r"\]\([^)]*\)", "]", t)                    # link targets
     t = re.sub(r"@[A-Za-z0-9_-]+", " ", t)                 # GitHub handles (checked separately)
-    t = re.sub(r"^\s*\d+\.\s", " ", t, flags=re.M)         # ordered-list markers
+    t = drop_list_markers(t)                               # ordered-list markers (not a wrapped line that starts "256. ")
     t = re.sub(r"(?<![\d.])\d{1,2}\s*月", " ", t)            # Chinese month number ("2026 年 4 月" for "April 2026"); days stay
     return Counter(n.replace(",", "") for n in re.findall(r"\d[\d,]*(?:\.\d+)?", t))
 
