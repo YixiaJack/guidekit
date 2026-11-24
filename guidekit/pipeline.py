@@ -95,6 +95,9 @@ def run_chapter(g: Guide, cid: str, review: bool = True, fix_rounds: int = 3, re
         return res
 
     existing = g.book / "chapters" / f"{cid}.md"
+    if st.get("status") == "published" and existing.exists() and not revise:
+        log(f"[{cid}] published; use --revise to check, fix and review it again")
+        return st
     if not out.exists():
         if existing.exists() and not revise:
             log(f"[{cid}] already in the book; use --revise to check, fix and review it, or delete it to redraft")
@@ -138,7 +141,9 @@ def run_many(g: Guide, ids: list[str], workers: int = 4, review: bool = True, re
     def one(cid):
         try:
             return run_chapter(g, cid, review=review, revise=revise)
-        except Exception as e:          # one chapter's failure must not stop the others
+        except Exception as e:          # one chapter's failure must not stop the others (but say why)
+            import sys, traceback
+            print(f"[{cid}] run failed:\n" + traceback.format_exc(), file=sys.stderr, flush=True)
             return {"id": cid, "status": f"run failed: {e!r}"}
     with ThreadPoolExecutor(max_workers=workers) as ex:
         return list(ex.map(one, ids))

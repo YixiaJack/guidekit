@@ -63,7 +63,9 @@ def run_many(g: Guide, ids: list[str], workers: int = 4) -> list[dict]:
     def one(cid):
         try:
             return translate_one(g, cid)
-        except Exception as e:          # one chapter's failure must not stop the others
+        except Exception as e:          # one chapter's failure must not stop the others (but say why)
+            import sys, traceback
+            print(f"[{cid}] run failed:\n" + traceback.format_exc(), file=sys.stderr, flush=True)
             return {"id": cid, "ok": False, "problems": [f"run failed: {e!r}"], "minutes": 0}
     with ThreadPoolExecutor(max_workers=workers) as ex:
         return list(ex.map(one, ids))

@@ -81,8 +81,8 @@ def run(stage: str, prompt: str, cwd: Path, read_roots: list[Path], write_roots:
             out, err, code = r.stdout, r.stderr, r.returncode
         except subprocess.TimeoutExpired as e:
             out, err, code = (e.stdout or "") if isinstance(e.stdout, str) else "", "timeout", -1
-        except FileNotFoundError:
-            out, err, code = "", f"{CLAUDE} not found (attempt {attempt + 1})", -2
+        except OSError as e:            # missing, busy or not yet executable while the CLI replaces itself
+            out, err, code = "", f"{CLAUDE} could not start: {e} (attempt {attempt + 1})", -2
             time.sleep(30)
             continue
         break
