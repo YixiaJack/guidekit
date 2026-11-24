@@ -23,7 +23,12 @@ CITE = {"thread": "`{kind} #N`", "titlebody": "`{kind} #N`", "file": "`{kind} <f
 def render(text: str, flags: set[str], values: dict[str, str]) -> str:
     def cond(m):
         return m.group(2) if m.group(1) in flags else ""
-    text = re.sub(r"\[\[if (\w+)\]\](.*?)\[\[end\]\]", cond, text, flags=re.S)
+    inner = re.compile(r"\[\[if (\w+)\]\]((?:(?!\[\[if ).)*?)\[\[end\]\]", re.S)   # innermost first: blocks may nest
+    while True:
+        new = inner.sub(cond, text)
+        if new == text:
+            break
+        text = new
     for k, v in values.items():
         text = text.replace("{{" + k + "}}", str(v))
     left = re.findall(r"\{\{(\w+)\}\}", text)
@@ -57,8 +62,9 @@ def _material(g: Guide) -> str:
 
 
 def values(g: Guide, chapter, out: Path, pack: Path) -> tuple[set[str], dict[str, str]]:
-    flags = {g.kind, "figures" if g.figures.get("manifest") else "nofigures"}
     repo = next((s for s in g.stores if s.get("format") == "repo"), None)
+    flags = {g.kind, "figures" if g.figures.get("manifest") else "nofigures"} | ({"repo"} if repo else set())
+    flags.add("beginner" if getattr(chapter, "track", "") == "beginner" else "deep")
     ex = g.source.get("examples", {})
     cites = ", ".join(CITE.get(s.get("format", "file"), "`{kind}`").format(kind=s["kind"], prefix=(s.get("prefixes") or ["src"])[0])
                       for s in g.stores)
@@ -67,6 +73,7 @@ def values(g: Guide, chapter, out: Path, pack: Path) -> tuple[set[str], dict[str
         "title": g.title, "intro": g.source.get("intro", "").strip(), "readers": g.source.get("readers", "").strip(),
         "material": _material(g), "pack": str(pack), "out": str(out), "chapters_dir": str(g.book / "chapters"),
         "pack_what": "files and line counts, design documents and matching issues" if g.kind == "code" else
+                     "expositions, announcements and the formal files for this step" if g.kind == "proof" else
                      "sources, candidate figures and orientation notes",
         "pin": f"{g.source.get('tag', '')}, commit {g.source.get('commit', '')}" if repo else "",
         "code_word": ", code excerpt" if repo else "", "words_min": words[0], "words_max": words[1],

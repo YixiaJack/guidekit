@@ -152,6 +152,11 @@ what to decide, in what order, and what has gone wrong before.
   capitalise what is left.
 - **A guide without a local app** must not show the "run it on your computer" button; only show what works.
 - **A missing translation is a message, not an error:** in Chinese mode show "中文版正在翻译" and offer EN.
+- **A checker false positive makes translators rewrite the text.** An English line that wrapped before "256. The …" lost
+  its number to the list-marker rule, so the translator replaced "256" with an invented explanation to pass. Any
+  "numbers added/missing" failure that survives three fix rounds: look at the English line first. Accept Chinese quote
+  marks (`> “…”`) as quotes. Two private-site publishers (Marin's and guidekit's) must use the same rule for the
+  site-wide CSP exclusion, or each one's run breaks the other's paths.
 - **Excerpt matching for updates needs the checker's rule:** a code block counts as an excerpt only when its next
   non-blank line is the `— Code:` line (diagrams are not excerpts), cut lines split it into pieces, and link texts can
   carry backticks. Test the matcher against the pinned checkout first: it must report zero changes there.

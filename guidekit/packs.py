@@ -17,7 +17,7 @@ from pathlib import Path
 from .config import Guide, _rel
 
 
-CODE_SUFFIXES = {".py", ".md", ".mdx", ".rst", ".cu", ".cuh", ".cpp", ".cc", ".c", ".h", ".hpp", ".rs", ".go", ".ts", ".js", ".toml", ".yaml", ".yml"}
+CODE_SUFFIXES = {".py", ".md", ".mdx", ".rst", ".cu", ".cuh", ".cpp", ".cc", ".c", ".h", ".hpp", ".rs", ".go", ".ts", ".js", ".toml", ".yaml", ".yml", ".lean", ".txt", ".bib"}
 
 
 def _lines(p: Path) -> int:

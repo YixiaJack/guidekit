@@ -43,7 +43,7 @@ def cmd_init(a):
 def cmd_fetch(a):
     from . import fetch
     g = _g(a)
-    what = a.what or {"code": "code", "records": "issues", "literature": "arxiv"}[g.kind]
+    what = a.what or {"code": "code", "proof": "code", "records": "issues", "literature": "arxiv"}[g.kind]
     if what == "code":
         repo = next(s for s in g.stores if s.get("format") == "repo")
         info = fetch.code(g.source["repo"], g.source["tag"], Path(repo["root"]).expanduser(), g.source.get("commit") or None)
@@ -191,7 +191,7 @@ def main(argv: list[str] | None = None) -> int:
     sub = p.add_subparsers(dest="cmd", required=True)
     s = sub.add_parser("init")
     s.add_argument("dir"); s.add_argument("--id", required=True); s.add_argument("--title", required=True)
-    s.add_argument("--kind", required=True, choices=["code", "records", "literature"]); s.add_argument("--audience", default="researchers")
+    s.add_argument("--kind", required=True, choices=["code", "records", "literature", "proof"]); s.add_argument("--audience", default="researchers")
     s.set_defaults(fn=cmd_init)
     s = sub.add_parser("fetch"); s.add_argument("guide"); s.add_argument("what", nargs="?", choices=["code", "issues", "arxiv"]); s.set_defaults(fn=cmd_fetch)
     s = sub.add_parser("packs"); s.add_argument("guide"); s.add_argument("chapters", nargs="*"); s.set_defaults(fn=cmd_packs)

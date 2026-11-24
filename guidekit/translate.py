@@ -60,5 +60,10 @@ def translate_one(g: Guide, cid: str, rounds: int = 3, log=print) -> dict:
 
 
 def run_many(g: Guide, ids: list[str], workers: int = 4) -> list[dict]:
+    def one(cid):
+        try:
+            return translate_one(g, cid)
+        except Exception as e:          # one chapter's failure must not stop the others
+            return {"id": cid, "ok": False, "problems": [f"run failed: {e!r}"], "minutes": 0}
     with ThreadPoolExecutor(max_workers=workers) as ex:
-        return list(ex.map(lambda c: translate_one(g, c), ids))
+        return list(ex.map(one, ids))

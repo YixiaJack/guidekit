@@ -3,7 +3,7 @@
 [guide]
 id        short name, used for run folders            ("sglang")
 title     book title
-kind      "code" | "records" | "literature"
+kind      "code" | "records" | "literature" | "proof" (an exposition of a mathematical proof and its formalization)
 audience  "beginners" | "researchers"
 root      project folder holding book/ and work/       ("~/sglang-kb")
 words     [min, max] target words per deep chapter     ([5000, 7000])
@@ -92,8 +92,8 @@ def load(path: str | Path) -> Guide:
     path = Path(path).expanduser().resolve()
     d = tomllib.loads(path.read_text())
     g = d["guide"]
-    if g["kind"] not in ("code", "records", "literature"):
-        raise ValueError("guide.kind must be code, records or literature")
+    if g["kind"] not in ("code", "records", "literature", "proof"):
+        raise ValueError("guide.kind must be code, records, literature or proof")
     chapters = [Chapter(**{k: v for k, v in c.items() if k in Chapter.__dataclass_fields__}) for c in d.get("chapter", [])]
     return Guide(id=g["id"], title=g["title"], kind=g["kind"], audience=g.get("audience", "researchers"),
                  root=_p(g["root"]), words=g.get("words", [5000, 7000]), max_code=g.get("max_code", 30),

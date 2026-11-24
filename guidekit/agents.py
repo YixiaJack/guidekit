@@ -74,12 +74,18 @@ def run(stage: str, prompt: str, cwd: Path, read_roots: list[Path], write_roots:
     env = {"HOME": str(Path.home()), "USER": os.environ.get("USER", ""), "PATH": "/opt/homebrew/bin:/usr/bin:/bin",
            "LANG": "en_US.UTF-8", "TMPDIR": os.environ.get("TMPDIR", "/tmp"), "GK_POLICY_FILE": str(policy)}
     t0 = time.time()
-    try:
-        r = subprocess.run(cmd, cwd=cwd, env=env, capture_output=True, text=True, timeout=timeout_min * 60,
-                           stdin=subprocess.DEVNULL)
-        out, err, code = r.stdout, r.stderr, r.returncode
-    except subprocess.TimeoutExpired as e:
-        out, err, code = (e.stdout or "") if isinstance(e.stdout, str) else "", "timeout", -1
+    for attempt in range(6):            # the CLI can vanish for a moment while it updates itself: wait and retry
+        try:
+            r = subprocess.run(cmd, cwd=cwd, env=env, capture_output=True, text=True, timeout=timeout_min * 60,
+                               stdin=subprocess.DEVNULL)
+            out, err, code = r.stdout, r.stderr, r.returncode
+        except subprocess.TimeoutExpired as e:
+            out, err, code = (e.stdout or "") if isinstance(e.stdout, str) else "", "timeout", -1
+        except FileNotFoundError:
+            out, err, code = "", f"{CLAUDE} not found (attempt {attempt + 1})", -2
+            time.sleep(30)
+            continue
+        break
     (cwd / f"{stage}.stdout.json").write_text(out or "")
     if err:
         (cwd / f"{stage}.stderr.txt").write_text(err)

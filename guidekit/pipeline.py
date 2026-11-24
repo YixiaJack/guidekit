@@ -135,8 +135,13 @@ def run_chapter(g: Guide, cid: str, review: bool = True, fix_rounds: int = 3, re
 
 
 def run_many(g: Guide, ids: list[str], workers: int = 4, review: bool = True, revise: bool = False) -> list[dict]:
+    def one(cid):
+        try:
+            return run_chapter(g, cid, review=review, revise=revise)
+        except Exception as e:          # one chapter's failure must not stop the others
+            return {"id": cid, "status": f"run failed: {e!r}"}
     with ThreadPoolExecutor(max_workers=workers) as ex:
-        return list(ex.map(lambda c: run_chapter(g, c, review=review, revise=revise), ids))
+        return list(ex.map(one, ids))
 
 
 # ---- staleness -------------------------------------------------------------------------------------------------------

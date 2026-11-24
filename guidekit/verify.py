@@ -26,7 +26,7 @@ from pathlib import Path
 
 from .sources import Sources, norm
 
-ELIDE = re.compile(r"^\s*(\.\.\.|#\s*\.\.\.|//\s*\.\.\.|/\*\s*\.\.\.\s*\*/)\s*$")
+ELIDE = re.compile(r"^\s*(\.\.\.|#\s*\.\.\.|//\s*\.\.\.|--\s*\.\.\.|/\*\s*\.\.\.\s*\*/)\s*$")
 NUM = re.compile(r"(?<![\w.#/@-])[-−]?\d[\d,]*(?:\.\d+)?(?:e[-−]?\d+)?%?(?![\w/])")
 QUOTE = re.compile(r'\s*>\s*"(.*)"\s*$')
 FIGURE = re.compile(r"!\[[^\]]*\]\(\.\./figures/([^)\s]+)\)")
