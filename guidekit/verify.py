@@ -175,6 +175,11 @@ class Checker:
                     r = self.figs.get(f)
                     if not r:
                         res.failures.append((i + 1, "figure not in manifest", f))
+                    elif r.get("computed"):             # drawn for the guide by its own script: the source line names it
+                        if r["source"] in src_line:
+                            res.passed += 1
+                        else:
+                            res.failures.append((i + 1, f"figure source should be {r['source']}", f))
                     elif not refs or f"{refs[0][0]} #{refs[0][1]}" != r["source"]:
                         res.failures.append((i + 1, f"figure source should be {r['source']}", f))
                     else:
