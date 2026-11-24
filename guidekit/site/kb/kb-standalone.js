@@ -152,7 +152,7 @@
         nav.dataset.siteNav = '1';
         var after = nav.querySelector('a[data-r="kb"]');
         st.nav.slice().reverse().forEach(function (x) {
-          var a = h('a', { href: '#/kb/doc/' + x.doc, 'data-en': x.en, 'data-zh': x.zh, text: x.en });
+          var a = h('a', { href: x.href || '#/kb/doc/' + x.doc, 'data-en': x.en, 'data-zh': x.zh, text: x.en });   // href: another page of the site
           after.insertAdjacentElement('afterend', a);
         });
       }

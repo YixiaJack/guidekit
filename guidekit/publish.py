@@ -31,7 +31,7 @@ def _sha(s: str) -> str:
     return "'sha256-" + base64.b64encode(hashlib.sha256(s.encode("utf-8")).digest()).decode() + "'"
 
 
-def csp_for(html_dir: Path) -> str:
+def csp_for(html_dir: Path, connect: list[str] | None = None) -> str:
     hashes, handlers = set(), set()
     for f in html_dir.rglob("*.html"):
         t = f.read_text(encoding="utf-8", errors="replace")
@@ -40,7 +40,8 @@ def csp_for(html_dir: Path) -> str:
     return ("default-src 'none'; script-src 'self' https://cdnjs.cloudflare.com " + " ".join(sorted(hashes))
             + (" 'unsafe-hashes' " + " ".join(sorted(handlers)) if handlers else "") + "; "
             "style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com data:; "
-            "img-src 'self' data:; connect-src 'self' https://cdnjs.cloudflare.com; frame-ancestors 'none'; form-action 'none'; base-uri 'self'")
+            "img-src 'self' data:; connect-src 'self' https://cdnjs.cloudflare.com" + "".join(" " + c for c in (connect or [])) +
+            "; frame-ancestors 'none'; form-action 'none'; base-uri 'self'")
 
 
 def _html(g: Guide) -> Path:
@@ -66,7 +67,8 @@ def public(g: Guide, deploy: bool = True) -> str:
     if saved.exists():
         shutil.move(str(saved), str(keep))
     shutil.copy2(html / "kb.html", dest / "index.html")
-    vj = {"trailingSlash": False, "headers": [{"source": "/(.*)", "headers": [{"key": "Content-Security-Policy", "value": csp_for(dest)}] + HEADERS}]}
+    connect = [c for c in (g.site or {}).get("connect", []) if re.match(r"^https://[a-z0-9.-]+$", c)]   # e.g. a live page reading api.github.com
+    vj = {"trailingSlash": False, "headers": [{"source": "/(.*)", "headers": [{"key": "Content-Security-Policy", "value": csp_for(dest, connect)}] + HEADERS}]}
     (dest / "vercel.json").write_text(json.dumps(vj, indent=2))
     if not deploy:
         return f"public site staged in {dest}"
