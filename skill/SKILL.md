@@ -79,6 +79,42 @@ what to decide, in what order, and what has gone wrong before.
 - **Give the book a front door that looks like a knowledge base**, not only a table of contents: topic tiles with
   counts and verdicts, the main findings, and a searchable card per item, linking into the long chapters.
 
+## Lessons from publishing and translating (Marin KB, 2026-11)
+
+- **Formulas shown out of context.** A formula copied from a sentence keeps its punctuation (`…,$$`): strip trailing
+  `, . ;` and spacing for display, after checking the formula matches the chapter verbatim. A display that joins several
+  statements with `,\qquad` (a law and its R², a definition and its condition) reads as one garbled line: split it into
+  one centred line per statement (`\begin{gathered} … \\ … \end{gathered}`). Render every formula with KaTeX
+  `throwOnError: true` before publishing; a formula that parses can still look wrong, so look at the page.
+- **Real names.** Never pair a GitHub handle with a real name unless a source links them (a profile link, a signed email
+  quote). A blog byline "Larry Dial" does not prove that @ClassicLarry is that person. Scan the book for
+  `Name (@handle)` and `@handle (Name)` and check each pairing against the sources.
+- **Summaries from other pipelines can be wrong.** Before translating or reusing a summary, check its dates and claims
+  against the source (a refit "in July" was an issue opened July 31 with results on August 5).
+- **Translation is checked block by block**, not trusted: same headings at the same levels, the same quotes, tables,
+  figures (same files), code blocks (identical), math spans (identical), link targets, every number, every GitHub handle
+  (same counts: who did what must not change), and no long untranslated runs. Calibrate the checker or translators will
+  game it: ignore month numbers (`4 月` for April) but count days; take digits inside handles (`@Helw150`) and metrics
+  (`pass@16`) out of the number check and check handles separately; treat `1,764,777` as one number and `0,1,2` as
+  three; let number words become digits ("seven" → 7) and only fail on missing multi-digit numbers. When a translator
+  reports a workaround ("dropped 日", "replaced a handle with 他们"), fix the checker, not the text.
+- **Bilingual sites.** One switch for the whole site, English by default; both languages are the same pages with the
+  same features, and each language shows only that language (original quotes as a hover tooltip). One renderer for both;
+  the second language's chapters are paired with the master block by block (headings take the master's anchors).
+- **Generated content needs an English mirror too** (daily digests, review items, answers, status words): a translation
+  memory keyed by the source string's hash, with the same number and reference checks; do not skip whole subtrees by
+  key name (`status` objects hold display text).
+- **Reviews must be real.** A cheap model with a soft brief returned 47-second reviews; requiring every cited source in
+  the summary, tables, decisions and pitfalls to be opened gave 5-minute reviews that fixed 3–10 claims per chapter. Check
+  that the review log was written (an agent can only write its cwd and `--add-dir` folders).
+- **Front door and UI.** Readers want the knowledge-base view (topic tiles with counts and verdict bars, main findings,
+  searchable cards) and each topic opening into its full chapter with tabs: overview (summary, findings, open questions,
+  key formulas and figures, "inside the chapter" outline), full chapter (sticky contents, progress bar, issue links open
+  the experiment card in a drawer), process and pitfalls, and all cards. No reading-time labels.
+- **Jupyter Book traps.** Every file in `_static` is injected into every page (scripts run twice); standalone pages go
+  in `html_extra_path`; a page behind a CSP needs hashes for Sphinx's inline scripts; `only html / only latex` keeps
+  interactive pages out of the PDF.
+
 ## Commands
 
 ```
