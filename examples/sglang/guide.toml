@@ -1,0 +1,30 @@
+# SGLang, explained: a reading guide to the SGLang codebase (kind = code)
+[guide]
+id = "sglang"
+title = "SGLang, explained"
+kind = "code"
+audience = "beginners"
+root = "~/sglang-kb"
+words = [5000, 7000]
+max_code = 30
+
+[source]
+repo = "sgl-project/sglang"
+tag = "v0.5.23"
+commit = "297e54fd105e974cdf401e5b4d20253a22c16f90"
+
+[[store]]
+kind = "path"
+format = "repo"
+root = "~/code-kb/src/sglang-v0.5.23"
+prefixes = ["python", "docs", "benchmark", "examples", "test", "scripts", "rust", "sgl-router", "sgl-model-gateway", "3rdparty", "proto", "docker"]
+
+[[store]]
+kind = "issue"
+format = "thread"
+dirs = ["~/code-kb/src/sglang-rfc"]
+
+[[store]]
+kind = "pr"
+format = "thread"
+dirs = ["~/code-kb/src/sglang-rfc"]

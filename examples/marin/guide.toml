@@ -1,0 +1,37 @@
+# Marin KB: a reading guide to Marin's experiment record (kind = records)
+[guide]
+id = "marin"
+title = "Marin KB: a reading guide to Marin's experiment record"
+kind = "records"
+audience = "researchers"
+root = "~/marin-kb"
+words = [6000, 9000]
+
+[figures]
+manifest = "book/figures/manifest.jsonl"
+
+[[store]]
+kind = "issue"
+format = "thread"
+dirs = ["~/research-kb/data/marin/raw", "~/research-kb/data/marin/extra"]
+
+[[store]]
+kind = "pr"
+format = "titlebody"
+dirs = ["~/research-kb/data/marin/prbody"]
+fallback = "issue"
+
+[[store]]
+kind = "report"
+format = "file"
+dir = "~/research-kb/data/sources/gh-marin-community__marin/code/docs/reports"
+
+[[store]]
+kind = "model-card"
+format = "file"
+dir = "~/research-kb/data/sources/gh-marin-community__marin/code/docs/model-cards"
+
+[[store]]
+kind = "blog"
+format = "single"
+file = "~/research-kb/drafts/marin-mochi-evidence/blog_architecture.md"

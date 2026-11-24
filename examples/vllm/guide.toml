@@ -1,0 +1,30 @@
+# vLLM, explained: a reading guide to the vLLM codebase (kind = code)
+[guide]
+id = "vllm"
+title = "vLLM, explained"
+kind = "code"
+audience = "beginners"
+root = "~/vllm-kb"
+words = [5000, 7000]
+max_code = 30
+
+[source]
+repo = "vllm-project/vllm"
+tag = "v0.34.0"
+commit = "62d4bc3c7e33b1b6c906e233e6af2d3506c482ca"
+
+[[store]]
+kind = "path"
+format = "repo"
+root = "~/code-kb/src/vllm-v0.34.0"
+prefixes = ["vllm", "docs", "csrc", "benchmarks", "examples", "tests", "tools", "requirements"]
+
+[[store]]
+kind = "issue"
+format = "thread"
+dirs = ["~/code-kb/src/vllm-rfc"]
+
+[[store]]
+kind = "pr"
+format = "thread"
+dirs = ["~/code-kb/src/vllm-rfc"]

@@ -1,0 +1,19 @@
+[project]
+name = "guidekit"
+version = "0.1.0"
+description = "Turn a large body of technical material (an experiment log, a codebase, a literature) into a verified reading guide"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.optional-dependencies]
+book = ["jupyter-book>=1.0.4,<2", "sphinxcontrib-mermaid"]
+
+[project.scripts]
+guidekit = "guidekit.cli:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["guidekit*"]
