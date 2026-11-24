@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Marin KB: topics and experiment cards</title>
+<meta name="description" content="Marin's 542 public experiments by topic: findings, open questions, key formulas and figures, and one card per experiment.">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css" integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV" crossorigin="anonymous">
+<link rel="stylesheet" href="kb/base.css">
+<link rel="stylesheet" href="kb/kb-extra.css">
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js" integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8" crossorigin="anonymous"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js" integrity="sha384-/TQbtLCAerC3jgaim+N78RZSDYV7ryeoBCVqTuzRrFec2akfBkHS7ACQ3PQhvMVi" crossorigin="anonymous"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.6/purify.min.js" integrity="sha384-+VfUPEb0PdtChMwmBcBmykRMDd+v6D/oFmB3rZM/puCMDYcIvF968OimRh4KQY9a" crossorigin="anonymous"></script>
+<script defer src="kb/kb.js"></script>
+<script defer src="kb/kb-standalone.js"></script>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <a class="brand" href="#/kb">Marin KB</a>
+  <nav id="nav">
+    <a href="#/kb" data-r="kb" data-zh="知识库" data-en="Knowledge base">Knowledge base</a>
+    <a href="#/chat" data-r="chat" data-zh="提问和想法" data-en="Ask &amp; ideas" hidden>Ask &amp; ideas</a>
+    <a href="intro.html" data-zh="书籍版" data-en="Book edition">Book edition</a>
+    <a id="askext" href="https://github.com/YixiaJack/marin-kb#run-it-on-your-computer-5-minutes" target="_blank" rel="noopener" data-zh="本地部署 ↗" data-en="Run it locally ↗" hidden>Run it locally ↗</a>
+  </nav>
+  <span class="langsw" id="langsw" role="group" aria-label="Language"><button type="button" data-lang="en" class="on" aria-pressed="true">EN</button><button type="button" data-lang="zh" lang="zh-CN" aria-pressed="false">中文</button></span>
+  <span class="agent" id="agent"></span>
+</div></header>
+<main class="wrap" id="view"><p class="muted" style="margin-top:40px">Loading…</p><noscript><p>This page needs JavaScript. The same material is in <a href="intro.html">the book</a>.</p></noscript></main>
+</body>
+</html>

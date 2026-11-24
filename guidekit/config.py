@@ -62,6 +62,7 @@ class Guide:
     file: Path
     stores: list[dict] = field(default_factory=list)
     figures: dict = field(default_factory=dict)
+    site: dict = field(default_factory=dict)
 
     @property
     def book(self) -> Path:
@@ -98,7 +99,7 @@ def load(path: str | Path) -> Guide:
                  root=_p(g["root"]), words=g.get("words", [5000, 7000]), max_code=g.get("max_code", 30),
                  model=g.get("model", "opus"), review_model=g.get("review_model", "sonnet"),
                  source=d.get("source", {}), chapters=chapters, file=path,
-                 stores=d.get("store", []), figures=d.get("figures", {}))
+                 stores=d.get("store", []), figures=d.get("figures", {}), site=d.get("site", {}))
 
 
 def _rel(guide: Guide, p: str | None) -> str | None:

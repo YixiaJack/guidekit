@@ -1,0 +1,88 @@
+/* Marin KB English pages: additions to the research-kb app styles (shared by kb.html and the app's English mode) */
+.mkb .kv{grid-template-columns:5.2em minmax(0,1fr)}
+.mkb .lead{font-size:14.5px;line-height:1.7}
+.mkb h3.sec{margin:16px 0 4px;font-size:15px}
+.formula{margin:10px 0 0;padding:10px 12px;background:var(--code);border-radius:10px}
+.formula .what{font-size:13px;color:var(--muted);margin-top:4px}
+.formula .tex{overflow-x:auto;overflow-y:hidden}
+.figs{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));margin-top:10px}
+figure.fig{margin:0;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px;display:grid;gap:6px;align-content:start}
+figure.fig img{width:100%;height:auto;border-radius:6px;background:#fff;cursor:zoom-in}
+figure.fig figcaption{font-size:12.5px;color:var(--muted);line-height:1.5}
+figure.fig.wide{margin:18px 0;padding:10px}
+figure.fig.wide figcaption b{color:var(--ink);font-weight:600}
+.cardfigs{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));margin:8px 0}
+.lightbox{position:fixed;inset:0;background:rgba(0,0,0,.82);display:flex;align-items:center;justify-content:center;z-index:60;padding:16px;cursor:zoom-out}
+.lightbox img{max-width:100%;max-height:100%;background:#fff;border-radius:6px}
+footer.foot{margin-top:40px;padding-top:14px;border-top:1px solid var(--line);font-size:12.5px;color:var(--muted)}
+/* topic header and tabs */
+.topic-hero{margin:10px 0 6px}.topic-hero h1{font-size:24px;margin:2px 0 6px;letter-spacing:-.01em}
+.topic-hero .vbar{max-width:360px;margin-top:8px}
+.topic-tabs{position:sticky;top:53px;z-index:8;background:var(--bg);padding:8px 0;margin:6px 0 12px;border-bottom:1px solid var(--line)}
+.topic-tabs .tab{font-size:13.5px;padding:4px 14px}
+/* "inside the chapter" outline */
+.outline{display:grid;gap:8px;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));margin-top:8px}
+.osec{display:grid;gap:3px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;color:var(--ink);background:var(--bg)}
+.osec:hover{border-color:var(--accent);text-decoration:none}
+.osec .ot{font-weight:620;font-size:14px}.osec .od{font-size:12.5px;color:var(--muted);line-height:1.5}
+details.glance{margin:8px 0 4px}details.glance>summary{font-size:13.5px;color:var(--accent)}
+/* reading view */
+.progress{position:fixed;top:0;left:0;right:0;height:3px;z-index:30;pointer-events:none}
+.progress span{display:block;height:100%;width:0;background:var(--accent);transition:width .1s linear}
+.doc-article{font-size:15.5px;line-height:1.78;padding:10px 30px 30px;max-width:820px}
+.doc-article h1{font-size:24px;line-height:1.3;margin:14px 0 12px}
+.doc-article h2{font-size:19px;margin:34px 0 10px;scroll-margin-top:110px}
+.doc-article h3{font-size:16px;margin:24px 0 8px;scroll-margin-top:110px}
+.doc-article p,.doc-article li{max-width:72ch}
+.doc-article blockquote{color:var(--ink)}
+.doc-article blockquote.evq{background:var(--q);border-left:3px solid var(--accent);border-radius:0 10px 10px 0;padding:8px 14px;margin:14px 0}
+.doc-article blockquote:first-of-type:not(.evq){background:var(--accent-soft);border-left:3px solid var(--accent);border-radius:0 10px 10px 0;color:var(--ink);padding:6px 14px}
+.srcline{display:block;font-size:12.5px;color:var(--muted);margin-top:4px}
+p.srcline{margin:-4px 0 14px}
+.doc-article .tablebox{margin:12px 0;font-size:13.5px}
+.doc-article .tablebox table{display:table;margin:0}
+.doc-article .tablebox th{position:sticky;top:0;background:var(--panel)}
+.doc-article a.iref{border-bottom:1px dashed var(--accent)}
+.doc-article a.iref:hover{text-decoration:none;background:var(--accent-soft)}
+.docmeta{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12.5px;color:var(--muted);padding:8px 0 4px;border-bottom:1px solid var(--line);margin-bottom:6px}
+.toc .toc-h{font-size:11px;letter-spacing:.06em;color:var(--muted);margin-bottom:6px;text-transform:uppercase}
+.toc a{line-height:1.4;padding:3px 0 3px 8px;border-left:2px solid transparent;margin-left:-14px}
+.toc a.on{color:var(--accent);border-left-color:var(--accent)}
+/* process and pitfalls */
+.sec-h{display:flex;justify-content:space-between;gap:10px;align-items:baseline;margin:0 0 6px}
+.sec-h .jump{font-weight:400}
+h2.chap-h{margin-top:22px}
+details.pit{border:1px solid var(--line);border-radius:10px;margin:8px 0;background:var(--bg)}
+details.pit>summary{display:flex;gap:10px;align-items:baseline;padding:9px 12px;margin:0;color:var(--ink);font-size:14.5px;list-style:none}
+details.pit>summary::-webkit-details-marker{display:none}
+details.pit[open]>summary{border-bottom:1px solid var(--line)}
+.pitn{flex:none;min-width:24px;height:24px;border-radius:7px;background:color-mix(in srgb,var(--warn) 18%,transparent);color:var(--warn);font-weight:700;font-size:13px;display:inline-flex;align-items:center;justify-content:center}
+.pitt{font-weight:600}.pitt p{margin:0;display:inline}
+.pit-body{border:0;border-radius:0;padding:4px 14px 10px;background:transparent}
+.md-inline p{margin:0}
+.timeline ul,.timeline ol{list-style:none;padding-left:16px;border-left:2px solid var(--line);margin-left:6px}
+.timeline li{position:relative;margin:0 0 10px;padding-left:8px}
+.timeline li::before{content:"";position:absolute;left:-23px;top:.55em;width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 3px var(--panel)}
+/* experiment drawer */
+.drawer-wrap{position:fixed;inset:0;z-index:50}
+.drawer-bg{position:absolute;inset:0;background:rgba(0,0,0,.28)}
+.drawer{position:absolute;top:0;right:0;bottom:0;width:min(520px,100%);background:var(--bg);border-left:1px solid var(--line);overflow:auto;padding:12px 16px 30px;box-shadow:-8px 0 24px rgba(0,0,0,.12);outline:none}
+.drawer-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.tiles.guides .tile{border-left:3px solid var(--accent)}
+.langsw{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;margin-left:auto;flex:none}
+.langsw button{border:0;background:var(--panel);color:var(--muted);font:inherit;font-size:12.5px;padding:3px 12px;cursor:pointer}
+.langsw button.on{background:var(--ink);color:var(--bg)}
+.kbhead{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.kbhead h2{margin-right:auto}
+@media (max-width:860px){.doc-article{padding:6px 16px 20px}.topic-tabs{top:0}}
+@media (max-width:600px){.mkb .kv{grid-template-columns:1fr}.mkb .kv dt{margin-top:4px}.topic-hero h1{font-size:21px}}
+.update-bar{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 16px;border-radius:999px;font-size:13px;z-index:70;box-shadow:0 4px 16px rgba(0,0,0,.2)}
+.update-bar a{color:var(--bg);text-decoration:underline;margin-left:6px}
+.answer{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 18px 14px}
+.card.fresh{border-left:3px solid var(--good)}
+/* Mermaid diagrams (code guides) */
+.mermaid-box{margin:16px 0;padding:12px;background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow-x:auto;white-space:pre;font-size:12px;line-height:1.5;color:var(--muted)}
+.mermaid-box:not(.ok){font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+.mermaid-box.ok{white-space:normal;text-align:center;color:inherit}
+.mermaid-box svg{max-width:100%;height:auto}
+nav.toc{display:block}            /* the site-wide nav{display:flex} is for the header bar */

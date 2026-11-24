@@ -21,7 +21,15 @@ review pass that reads the sources again; in our three guides that pass changed 
 6. *Review.* A second agent checks the prose against the sources and fixes it in place, with a log of every change.
 7. *Whole-book pass.* Contradictions between chapters, shared terms, a glossary; then the front door: main findings,
    a one-hour introduction, reading paths, and a searchable knowledge-base page (topic tiles, one card per item).
-8. *Publish and update.* Website and PDF; when sources change, the affected chapters are flagged and revised.
+8. *Website and translation.* A knowledge-base site (topic tiles, beginner track, each chapter as overview / full
+   chapter / design-and-pitfalls, formulas and diagrams) in English and Chinese with one switch. The Chinese edition is
+   written by locked agents and checked block by block against the English (headings, quotes, tables, figures, code,
+   math, links, numbers, handles), so nothing is added, dropped or changed in translation.
+9. *Publish.* A public static site per guide and a path on the private research site, where the guides sit side by
+   side with curated links between them (a Marin finding about vLLM's sampling links to the vLLM chapter on sampling)
+   and questions can draw on all of them.
+10. *Update.* Records guides follow new issues daily; code guides follow releases: a weekly check finds the chapters
+   whose code excerpts changed in the latest release.
 
 **What we learned building Marin KB, vLLM explained and SGLang explained.**
 
@@ -31,5 +39,6 @@ review pass that reads the sources again; in our three guides that pass changed 
 - Key decisions often sit outside the labelled issues; following references found them.
 - "Closed" is not "answered": many questions were closed by a stale bot or as superseded.
 
-**Reuse.** A new guide is a `guide.toml` (sources, readers, chapters) plus `guidekit write`. As a test, the remaining
-SGLang chapters are being written with the harness and its shared brief, with no hand-written prompts.
+**Reuse.** A new guide is a `guide.toml` (sources, readers, chapters, `[site]` texts) and five commands:
+`write`, `translate`, `site`, `build`, `publish`. The SGLang guide's later chapters, the review of all 36 vLLM and SGLang
+chapters, their Chinese editions and both websites were produced this way, with no hand-written prompts.

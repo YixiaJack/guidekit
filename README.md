@@ -31,8 +31,15 @@ python3 -m venv .venv && .venv/bin/pip install -e '.[book]'
 .venv/bin/guidekit packs ~/my-guide/guide.toml
 .venv/bin/guidekit write ~/my-guide/guide.toml --all -j 4
 .venv/bin/guidekit status ~/my-guide/guide.toml
+.venv/bin/guidekit translate ~/my-guide/guide.toml -j 3      # Chinese edition, checked block by block
+.venv/bin/guidekit site ~/my-guide/guide.toml                # bilingual knowledge-base website (book/_extra)
 .venv/bin/guidekit build ~/my-guide/guide.toml --pdf
+.venv/bin/guidekit publish ~/my-guide/guide.toml public      # static site on Vercel (needs the Vercel CLI, signed in)
+.venv/bin/guidekit update ~/my-guide/guide.toml              # code guides: behind the latest release? which chapters?
 ```
+
+The website texts (name, lead, groups, tabs, nav) come from a `[site]` section in guide.toml (see
+`guidekit/sitebuild.py` and `examples/vllm/guide.toml`); links to other guides from `<guide>/site/related.json`.
 
 Writing agents run through the Claude Code CLI (`claude -p`) in a restricted mode; you need it installed and signed in.
 

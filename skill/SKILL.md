@@ -18,7 +18,7 @@ what to decide, in what order, and what has gone wrong before.
   review pass is for; in the three guides it changed 10–50 places per chapter. Never ship a chapter that only passed
   the checker.
 
-## The eight steps
+## The ten steps
 
 1. **Scope and readers** (ask the user; these decide everything else).
    - What material: a repo's code at a release (`kind = "code"`), a project's issues/PRs/reports (`records`), or papers (`literature`).
@@ -52,8 +52,33 @@ what to decide, in what order, and what has gone wrong before.
    date or number stated differently), shared terms (a glossary), people's handles, and cross-links. Then add the
    front door: an intro with the main findings, a "start here" page, reading paths for different readers, and
    "Read first" lines at the top of long chapters.
-8. **Publish and keep it current** — `guidekit build --pdf`; private first; public only with the user's explicit OK.
-   `guidekit stale` lists chapters whose sources changed since publication; re-run `write --revise` on them.
+8. **Website and translation** — `guidekit site GUIDE` writes the knowledge-base site into `book/_extra/` (the same
+   bilingual renderer as Marin KB: topic tiles grouped by the table of contents, a beginner track, each chapter opening
+   into overview / full chapter / design-and-pitfalls tabs, KaTeX formulas, Mermaid diagrams, an EN/中文 switch with
+   English by default). Texts come from `[site]` in guide.toml. `guidekit translate GUIDE -j 3` writes `book_zh/` with
+   one locked agent per chapter and the block-by-block checker (`--check` to only check); untranslated chapters keep
+   the Chinese edition off. Translate only reviewed chapters: a revision after translation means translating again.
+   Then `guidekit site` again and `guidekit build`.
+9. **Publish** — private first; public only with the user's explicit OK.
+   - `guidekit publish GUIDE public`: copies the build to `~/.cache/guidekit-sites/<name>` (never inside a git checkout:
+     Vercel then connects the project to GitHub and builds the repo root on every push, which served 404s), makes
+     kb.html the home page, writes a CSP with this build's inline-script hashes, deploys, and disconnects git.
+     Check that the Vercel name (`[site] public_name`) is free and not someone else's project first.
+   - `guidekit publish GUIDE private --web DIR --path vllm-kb`: copies the build to a path of an existing site (the
+     research site, behind its login) and adds a CSP rule for that path, narrowing the site-wide rule.
+   - Linking guides: `<guide>/site/related.json` maps a topic to topics in other guides with a one-line reason in both
+     languages (`{"sampling": [{"kb": "marin", "id": "sys", "title": {...}, "why": {...}}]}`). Write each link from
+     what the two chapters actually say (grep both); the topic page shows them as "Related in the other guides". On the
+     public sites they open the other public site; a host can keep them in-site with `relatedUrl`.
+   - On the research site: one tab per guide in the knowledge base (`CODE_KBS` in app.js; the shared module resets its
+     caches when `assets` changes), and `kb guides` copies the chapters into `library/guides/` so questions, idea checks
+     and brainstorms can grep them.
+10. **Keep it current** — code guides follow releases, not commits: `guidekit update GUIDE` asks GitHub for the latest
+   release and, if it is newer than the pin, clones it beside the pinned checkout and looks for every code excerpt
+   (piece by piece, as the checker does) in the new release; `work/update-<tag>.md` lists the chapters whose excerpts
+   changed or vanished. `guidekit update GUIDE --weekly` prints a launchd plist for a Monday check. Moving the guide is
+   a decision: set tag/commit, `fetch`, `write CH … --revise`, `translate`, `site`, `build`, `publish`. Records guides
+   (Marin) update daily from new issues instead; `guidekit stale` lists chapters whose packed sources changed.
 
 ## Decision points: stop and ask the user
 
@@ -115,6 +140,22 @@ what to decide, in what order, and what has gone wrong before.
   in `html_extra_path`; a page behind a CSP needs hashes for Sphinx's inline scripts; `only html / only latex` keeps
   interactive pages out of the PDF.
 
+## Lessons from the code guides' websites (vLLM, SGLang, 2026-11)
+
+- **Diagrams.** Mermaid labels are measured before the page font applies, so long function names get cut
+  (`allocate_slo ts`): render into a container that already has the page font, pass the font to `mermaid.initialize`
+  and use a wide `wrappingWidth`. The translator may translate diagram labels but must keep node ids and code names;
+  the checker compares the number of diagrams, not their text.
+- **Site-wide CSS leaks.** The research site's `nav{display:flex}` laid the chapter contents out in one row; scope
+  layout rules to the header.
+- **Summaries come in many shapes** (`> **Summary.** …`, `> Summary: …`, `> 摘要：…`): strip all of them and
+  capitalise what is left.
+- **A guide without a local app** must not show the "run it on your computer" button; only show what works.
+- **A missing translation is a message, not an error:** in Chinese mode show "中文版正在翻译" and offer EN.
+- **Excerpt matching for updates needs the checker's rule:** a code block counts as an excerpt only when its next
+  non-blank line is the `— Code:` line (diagrams are not excerpts), cut lines split it into pieces, and link texts can
+  carry backticks. Test the matcher against the pinned checkout first: it must report zero changes there.
+
 ## Commands
 
 ```
@@ -126,7 +167,14 @@ guidekit write GUIDE CH ... [--all] [--revise] [--no-review] [-j 4]
 guidekit verify GUIDE [FILE ...]
 guidekit status GUIDE
 guidekit stale GUIDE
+guidekit site GUIDE             # knowledge-base website data into book/_extra (then build)
+guidekit translate GUIDE [CH ...] [--check] [-j 3]
 guidekit build GUIDE [--pdf]
+guidekit publish GUIDE public | private --web DIR --path P [--deploy]
+guidekit update GUIDE [--weekly]
 ```
+
+The renderer lives in `guidekit/site/` and is the canonical copy: Marin KB's `book/_extra/kb/` is synced from it
+(`make kb-assets` in marin-kb), and research-kb-web loads the same module from each guide's path.
 
 Worked examples: `examples/marin`, `examples/vllm`, `examples/sglang` (their guide.toml files).

@@ -12,6 +12,10 @@ pinned sources, reviewed, and published as a website and a PDF.
   guidekit status GUIDE                         one line per chapter: state, words, checks, numbers to look at
   guidekit stale GUIDE                          chapters whose sources changed since they were published
   guidekit build GUIDE [--pdf]                  Jupyter Book site (and PDF via tectonic)
+  guidekit site GUIDE                           the bilingual knowledge-base website data (book/_extra), then `build`
+  guidekit translate GUIDE [CH ...] [-j N]      Chinese edition in book_zh/, checked block by block against the English
+  guidekit publish GUIDE public|private         public static site (Vercel) or a path on a private site
+  guidekit update GUIDE [--weekly]              behind the latest release? which chapters' code excerpts changed
 """
 from __future__ import annotations
 
@@ -129,6 +133,59 @@ def cmd_build(a):
     return subprocess.run(["tectonic", "-X", "compile", tex.name], cwd=tex.parent).returncode
 
 
+def cmd_translate(a):
+    from . import translate
+    g = _g(a)
+    ids = a.chapters or [c.id for c in g.chapters]
+    if a.check:
+        bad = 0
+        for cid in ids:
+            probs = translate.check(g, cid)
+            print(f"{cid}: {'ok' if not probs else '; '.join(probs[:3])}")
+            bad += bool(probs)
+        return 1 if bad else 0
+    todo = [c for c in ids if translate.check(g, c)]
+    print(f"translating {len(todo)} of {len(ids)} chapters")
+    res = translate.run_many(g, todo, workers=a.j)
+    for r in res:
+        print(f"{r['id']}: {'ok' if r['ok'] else 'problems: ' + '; '.join(r['problems'][:3])} ({r['minutes']} min)")
+    return 0 if all(r["ok"] for r in res) else 1
+
+
+def cmd_publish(a):
+    from . import publish
+    g = _g(a)
+    if a.where == "public":
+        print(publish.public(g, deploy=not a.no_deploy))
+    else:
+        if not a.web or not a.path:
+            print("private needs --web DIR --path P")
+            return 2
+        print(publish.private(g, Path(a.web).expanduser(), a.path, deploy=a.deploy))
+    return 0
+
+
+def cmd_update(a):
+    from . import update
+    g = _g(a)
+    if a.weekly:
+        print(update.plist(g.file, f"guidekit.update.{g.id}"))
+        return 0
+    r = update.check(g)
+    if r["current"]:
+        print(f"{g.id}: current ({r['pinned']} is the latest release)")
+        return 0
+    print(f"{g.id}: pinned {r['pinned']}, latest {r['latest']}; {r['excerpts']} excerpts checked, "
+          f"{len(r['chapters'])} chapters affected: {' '.join(r['chapters'])}; report {r['report']}")
+    return 0
+
+
+def cmd_site(a):
+    from . import sitebuild
+    print(sitebuild.run(_g(a)))
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(prog="guidekit", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = p.add_subparsers(dest="cmd", required=True)
@@ -147,6 +204,13 @@ def main(argv: list[str] | None = None) -> int:
     s = sub.add_parser("status"); s.add_argument("guide"); s.set_defaults(fn=cmd_status)
     s = sub.add_parser("stale"); s.add_argument("guide"); s.set_defaults(fn=cmd_stale)
     s = sub.add_parser("build"); s.add_argument("guide"); s.add_argument("--pdf", action="store_true"); s.set_defaults(fn=cmd_build)
+    s = sub.add_parser("site"); s.add_argument("guide"); s.set_defaults(fn=cmd_site)
+    s = sub.add_parser("publish"); s.add_argument("guide"); s.add_argument("where", choices=["public", "private"])
+    s.add_argument("--web"); s.add_argument("--path"); s.add_argument("--deploy", action="store_true"); s.add_argument("--no-deploy", action="store_true")
+    s.set_defaults(fn=cmd_publish)
+    s = sub.add_parser("update"); s.add_argument("guide"); s.add_argument("--weekly", action="store_true"); s.set_defaults(fn=cmd_update)
+    s = sub.add_parser("translate"); s.add_argument("guide"); s.add_argument("chapters", nargs="*")
+    s.add_argument("--check", action="store_true"); s.add_argument("-j", type=int, default=4); s.set_defaults(fn=cmd_translate)
     a = p.parse_args(argv)
     return a.fn(a)
 
