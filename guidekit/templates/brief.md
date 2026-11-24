@@ -163,6 +163,10 @@ about 15 nodes, every box named after a real class, function, file or step.
 Math: write formulas in LaTeX (`$...$`, `$$...$$`) when a source states a functional form or a fitted law; keep the
 original constants and define every symbol. Do not derive new results.
 
+Never write a local file path (anything under a home directory, such as the paths of the folders above) into the
+chapter: cite sources only in the forms below, and computed figures as "computed for this guide". Do not mention the
+figure manifest or chapter packs to the reader; they are tools for you.
+
 Sources are cited as: {{cite_forms}}.
 {{rules}}
 ## Finish

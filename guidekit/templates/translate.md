@@ -39,6 +39,8 @@ Evidence lines:
 People: use they/them-neutral Chinese (他们/该作者/此人 or the handle); never add a real name, a gendered pronoun (他/她), or
 a title the English does not have.
 
+Never copy a local file path into the Chinese file; the English master has none.
+
 ## How to work
 
 Long chapters are 10–22k words. Translate section by section: write the file with the first sections, then append the rest

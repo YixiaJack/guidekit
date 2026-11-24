@@ -26,6 +26,7 @@ from pathlib import Path
 
 from .sources import Sources, norm
 
+HOME_RX = re.compile(re.escape(str(Path.home())) + r"[^\s`)]*|/Users/[A-Za-z0-9_.-]+/[^\s`)]*")
 ELIDE = re.compile(r"^\s*(\.\.\.|#\s*\.\.\.|//\s*\.\.\.|--\s*\.\.\.|/\*\s*\.\.\.\s*\*/)\s*$")
 NUM = re.compile(r"(?<![\w.#/@-])[-−]?\d[\d,]*(?:\.\d+)?(?:e[-−]?\d+)?%?(?![\w/])")
 QUOTE = re.compile(r'\s*>\s*"(.*)"\s*$')
@@ -127,6 +128,9 @@ class Checker:
                 else:
                     code.append(ln)
                 continue
+            # local file paths must never reach a published chapter (they name the machine and its user)
+            if HOME_RX.search(ln):
+                res.failures.append((i + 1, "local file path", HOME_RX.search(ln).group(0)[:60]))
             # quotes
             m = QUOTE.match(ln)
             if m:
