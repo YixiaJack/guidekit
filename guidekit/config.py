@@ -40,7 +40,10 @@ class Chapter:
     paths: list[str] = field(default_factory=list)
     docs: list[str] = field(default_factory=list)
     issues: str = ""
+    include: list[int] = field(default_factory=list)
+    papers: list[str] = field(default_factory=list)
     words: list[int] | None = None
+    track: str = "deep"
 
 
 @dataclass

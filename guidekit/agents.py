@@ -18,7 +18,7 @@ from pathlib import Path
 
 TOOLS = "Read,Glob,Grep,Write,Edit"
 HERE = Path(__file__).resolve().parent
-TEMPLATES = HERE.parent / "templates"
+TEMPLATES = HERE / "templates"
 STATE = Path.home() / ".guidekit"
 CLAUDE = shutil.which("claude") or "/opt/homebrew/bin/claude"
 MODELS = {"opus": "opus", "sonnet": "sonnet", "haiku": "haiku"}

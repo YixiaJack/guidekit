@@ -37,7 +37,7 @@ def _log(entry):
 def deny(reason, ctx):
     ctx.update(decision="deny", reason=reason)
     _log(ctx)
-    sys.stderr.write(f"[research-kb guard] 已拦截：{reason}。只能读写本次任务指定的目录，不能执行命令或联网。\n")
+    sys.stderr.write(f"[guidekit guard] blocked: {reason}. You may only read and write the folders named in your task; no commands, no network.\n")
     sys.exit(2)
 
 
@@ -72,14 +72,14 @@ def main():
     try:
         data = json.loads(sys.stdin.read() or "{}")
     except Exception:
-        deny("无法解析工具调用", ctx)
+        deny("cannot parse the tool call", ctx)
     tool = data.get("tool_name") or ""
     ti = data.get("tool_input") or {}
     ctx.update(tool=tool, input={k: (str(v)[:300]) for k, v in ti.items() if k != "content"})
 
     pol_file = os.environ.get("GK_POLICY_FILE")
     if not pol_file:
-        deny("没有安全策略文件", ctx)
+        deny("no policy file", ctx)
     try:
         with open(pol_file, encoding="utf-8") as f:
             pol = json.load(f)
@@ -88,7 +88,7 @@ def main():
         cwd = os.path.realpath(pol["cwd"])
         ctx["stage"] = pol.get("stage", "")
     except Exception:
-        deny("安全策略文件无效", ctx)
+        deny("policy file is invalid", ctx)
 
     if tool in READ_TOOLS:
         if tool == "Read":
@@ -97,25 +97,25 @@ def main():
             targets = [ti.get("path") or cwd]
             for key in ("pattern", "glob") if tool == "Glob" else ("glob",):
                 if bad_pattern(ti.get(key)):
-                    deny(f"{tool} 的匹配模式不能是绝对路径或包含 ..", ctx)
+                    deny(f"{tool} patterns may not be absolute or contain ..", ctx)
         for t in targets:
             if not t or not inside(resolve(t, cwd), read_roots + write_roots):
-                deny(f"读取 {t} 超出允许范围", ctx)
+                deny(f"reading {t} is outside the allowed folders", ctx)
         allow(ctx)
 
     if tool in WRITE_TOOLS:
         t = ti.get("file_path")
         if not t:
-            deny("写入缺少路径", ctx)
+            deny("write without a path", ctx)
         raw = os.path.expanduser(str(t))
         raw = raw if os.path.isabs(raw) else os.path.join(cwd, raw)
         if os.path.islink(raw):
-            deny(f"不能通过符号链接写入 {t}", ctx)
+            deny(f"writing through a symlink is not allowed: {t}", ctx)
         if not inside(resolve(t, cwd), write_roots):
-            deny(f"写入 {t} 超出允许范围", ctx)
+            deny(f"writing {t} is outside the allowed folders", ctx)
         allow(ctx)
 
-    deny(f"工具 {tool or '(空)'} 不允许使用", ctx)
+    deny(f"tool {tool or '(none)'} is not allowed", ctx)
 
 
 if __name__ == "__main__":

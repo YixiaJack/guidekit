@@ -12,6 +12,24 @@ max_code = 30
 repo = "sgl-project/sglang"
 tag = "v0.5.23"
 commit = "297e54fd105e974cdf401e5b4d20253a22c16f90"
+intro = """
+You are writing one chapter of **SGLang, explained**: a reading guide to the SGLang codebase for people who know deep
+learning but have never read an inference engine. SGLang is huge (about 1.8 million lines of Python under
+`python/sglang/`, plus kernels and a Rust router), and its code *is* the thing worth learning: why RadixAttention, the
+scheduler or the overlap loop is built the way it is. Each chapter takes one part of the system and walks the reader
+from the problem, to the mental model, to the actual code, with the design reasons from SGLang's own docs, design notes
+and issues. Where SGLang and vLLM differ in an instructive way, say so briefly (a companion guide covers vLLM).
+"""
+readers = """
+The reader knows PyTorch, transformers and attention, and has used SGLang as a user at most. Runtime code is in
+`python/sglang/srt/`, the frontend language in `python/sglang/lang/`, the router and gateway in Rust under `sgl-router/`
+and `sgl-model-gateway/`, docs as `.mdx` under `docs/docs/`. Never run, import or install SGLang code.
+"""
+notes = ["Only 18 RFC issues exist for SGLang; most design reasoning is in the docs and in code comments."]
+rules = """
+Diagrams: use Mermaid (```mermaid) for one or two small diagrams per chapter; every box is a real class, function or file.
+Docs often lag the code: when they disagree, the code at the pinned commit is the truth; say so in the pitfalls section.
+"""
 
 [[store]]
 kind = "path"
@@ -28,3 +46,117 @@ dirs = ["~/code-kb/src/sglang-rfc"]
 kind = "pr"
 format = "thread"
 dirs = ["~/code-kb/src/sglang-rfc"]
+
+[source.examples]
+quote = "Prefill Interruption: Incoming prefill batches frequently interrupt ongoing decode batches"
+source = "[docs/docs/advanced_features/pd_disaggregation.mdx](https://github.com/sgl-project/sglang/blob/297e54fd105e974cdf401e5b4d20253a22c16f90/docs/docs/advanced_features/pd_disaggregation.mdx)"
+code = "python/sglang/srt/managers/schedule_batch.py#L42-L54"
+code_url = "https://github.com/sgl-project/sglang/blob/297e54fd105e974cdf401e5b4d20253a22c16f90/python/sglang/srt/managers/schedule_batch.py#L42-L54"
+
+# Chapters already written with the earlier scripts (in the book): request, radix, scheduler, runner, models, moe.
+# Listed so the brief can link them; `guidekit write` refuses to redraft them without --revise.
+
+[[chapter]]
+id = "request"
+title = "The life of a request"
+
+[[chapter]]
+id = "radix"
+title = "RadixAttention and KV memory"
+
+[[chapter]]
+id = "scheduler"
+title = "The scheduler"
+
+[[chapter]]
+id = "runner"
+title = "The model runner"
+
+[[chapter]]
+id = "models"
+title = "How a model is implemented and loaded"
+
+[[chapter]]
+id = "moe"
+title = "Mixture of experts and expert parallelism"
+
+[[chapter]]
+id = "distributed"
+title = "Parallelism and routing: TP, DP, DP-attention, PP and the router"
+paths = ["python/sglang/srt/distributed", "python/sglang/srt/managers/data_parallel_controller.py", "python/sglang/srt/managers/scheduler_pp_mixin.py", "sgl-router/README.md", "sgl-model-gateway/README.md"]
+docs = ["docs/docs/advanced_features/dp_dpa_smg_guide.mdx", "docs/docs/advanced_features/pipeline_parallelism.mdx", "docs/docs/advanced_features/router.mdx", "docs/docs/advanced_features/dcp.mdx", "docs/docs/advanced_features/prefill_cp.mdx"]
+issues = 'parallel|router|gateway|dp|tensor|pipeline|load balanc'
+scope = """
+Tensor, data, DP-attention, pipeline and context parallelism as SGLang implements them: process groups and communicators, the data-parallel controller and how requests are balanced, how DP attention combines with expert parallelism (link moe.md), pipeline-parallel scheduling, and what the Rust router / model gateway adds in front of several servers. One worked example: one request on a 2-node, 8-GPU-per-node deployment with stated TP/DP sizes.
+"""
+
+[[chapter]]
+id = "specdec"
+title = "Speculative decoding"
+paths = ["python/sglang/srt/speculative"]
+docs = ["docs/docs/advanced_features/speculative_decoding.mdx", "docs/docs/advanced_features/adaptive_speculative_decoding.mdx"]
+issues = 'specul|eagle|draft|mtp'
+scope = """
+Draft-then-verify as SGLang implements it: EAGLE/EAGLE-3, MTP, n-gram and standalone drafts; the draft and verify passes, tree attention and acceptance, how the scheduler and KV cache account for speculative tokens, CUDA graphs for draft steps, adaptive speculation. Worked example: one decode step with stated draft length and acceptance.
+"""
+
+[[chapter]]
+id = "constrained"
+title = "Sampling, structured output and function calling"
+paths = ["python/sglang/srt/sampling", "python/sglang/srt/constrained", "python/sglang/srt/function_call", "python/sglang/srt/parser"]
+docs = ["docs/docs/advanced_features/structured_outputs.mdx", "docs/docs/advanced_features/tool_parser.mdx", "docs/docs/advanced_features/separate_reasoning.mdx", "docs/docs/advanced_features/deterministic_inference.mdx"]
+issues = 'sampl|structur|grammar|json|function|tool|reasoning|determinis'
+scope = """
+Sampling parameters and the sampler (penalties, top-k/p/min-p, logit bias), grammar-constrained decoding backends (xgrammar, outlines, llguidance) and how vocabulary masks are applied and overlapped with the forward pass, tool/function-call parsers and reasoning-content separation, and deterministic inference. Worked example: a JSON-schema request through mask computation and sampling.
+"""
+
+[[chapter]]
+id = "pd"
+title = "Disaggregated serving and the hierarchical cache (HiCache)"
+paths = ["python/sglang/srt/disaggregation", "python/sglang/srt/mem_cache/hicache_storage.py", "python/sglang/srt/managers/cache_controller.py"]
+docs = ["docs/docs/advanced_features/pd_disaggregation.mdx", "docs/docs/advanced_features/hicache.mdx", "docs/docs/advanced_features/hicache_design.mdx", "docs/docs/advanced_features/hicache_best_practices.mdx", "docs/docs/advanced_features/epd_disaggregation.mdx"]
+issues = 'disagg|pd|prefill|decode|hicache|mooncake|nixl|offload'
+scope = """
+Prefill/decode disaggregation (bootstrap, KV transfer backends such as Mooncake and NIXL, the prefill and decode server loops, failure handling) and HiCache (host and storage tiers below the radix cache, write-through/back policies, prefetch). Worked example: one long-prompt request handed from a prefill server to a decode server, with block counts from stated assumptions.
+"""
+
+[[chapter]]
+id = "lang"
+title = "The SGLang frontend language"
+paths = ["python/sglang/lang"]
+docs = ["docs/docs/references", "docs/docs/basic_usage"]
+issues = 'lang|frontend|program|dsl'
+scope = """
+The original SGLang frontend: programs built from gen/select/fork, the interpreter and backends, how a program's calls become requests that share prefixes in the radix cache, what is still maintained in v0.5.23 and how it relates to the OpenAI-compatible server. Worked example: a small fork/join program traced to its requests.
+"""
+
+[[chapter]]
+id = "mm-lora"
+title = "Multimodal models and LoRA"
+paths = ["python/sglang/srt/multimodal", "python/sglang/srt/lora", "python/sglang/srt/managers/multimodal_processor.py"]
+docs = ["docs/docs/advanced_features/lora.mdx", "docs/docs/advanced_features/cuda_graph_for_multi_modal_encoder.mdx"]
+issues = 'multimodal|vision|image|lora|adapter'
+scope = """
+Multimodal inputs (processors, placeholder tokens, encoder runs and caching, how image tokens enter the radix cache) and multi-LoRA serving (adapter loading and memory pool, batching requests with different adapters, kernels). Two short worked examples, one per half.
+"""
+
+[[chapter]]
+id = "pitfalls"
+title = "Common confusions and pitfalls"
+paths = ["python/sglang/srt/server_args.py", "python/sglang/srt/environ.py"]
+docs = ["docs/docs/references", "docs/docs/advanced_features/hyperparameter_tuning.mdx"]
+issues = '.'
+scope = """
+The synthesis chapter for a reader about to read or change the code, debug a deployment, or benchmark. Read the existing chapters (their pitfalls and docs-vs-code notes are the main input) but verify every claim against the pinned source. Group: words that mean different things in different places; docs that lag the code; memory and capacity surprises (mem-fraction-static, CUDA graph memory, chunked prefill size); reproducibility and determinism; performance traps; server arguments and environment variables and their precedence. End with a short how-to-debug checklist.
+"""
+
+[[chapter]]
+id = "start"
+title = "Start here: what SGLang is and how to read its code"
+paths = ["python/sglang/__init__.py", "python/sglang/srt/entrypoints/engine.py", "python/sglang/srt/server_args.py", "python/sglang/launch_server.py"]
+docs = ["README.md", "docs/docs/get-started", "docs/docs/basic_usage", "docs/docs/developer_guide"]
+issues = '^$'
+scope = """
+The front door for beginners (2,000–3,500 words, at most five excerpts of at most 20 lines): what an inference engine is for, what SGLang adds (RadixAttention, the overlap scheduler, the frontend language, the router), the processes and one request in a picture, a map of the code with the ten files to read first and what to skip, and reading paths through the other chapters. Open with 'Before you start' and end with 'What you now know' and 'Go deeper'.
+"""
+words = [2000, 3500]
