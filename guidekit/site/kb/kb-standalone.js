@@ -164,7 +164,8 @@
     var askx = document.getElementById('askext');
     if (askx) { askx.hidden = !!UI.ai || !!(site() && !site().repo_readme); askx.href = localGuide(); }
     var ag = document.getElementById('agent');
-    if (ag) { ag.textContent = ''; add(ag, [h('span', { class: 'dot ' + (aiOn() ? 'on' : 'off') }), aiOn() ? L('AI: ', 'AI：') + (PROVIDER[UI.ai.provider] || UI.ai.provider) : UI.ai ? L('AI off', 'AI 未启用') : L('Read-only (no server)', '只读（没有本地服务）')]); }
+    if (ag && !UI.ai && site() && !site().repo_readme) { ag.textContent = ''; ag.hidden = true; }   // a reading-only guide: nothing to report
+    else if (ag) { ag.hidden = false; ag.textContent = ''; add(ag, [h('span', { class: 'dot ' + (aiOn() ? 'on' : 'off') }), aiOn() ? L('AI: ', 'AI：') + (PROVIDER[UI.ai.provider] || UI.ai.provider) : UI.ai ? L('AI off', 'AI 未启用') : L('Read-only (no server)', '只读（没有本地服务）')]); }
   }
   function render() {
     var r = route();
