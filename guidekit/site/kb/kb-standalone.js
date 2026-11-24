@@ -136,12 +136,17 @@
     if (p[1] && M.hasTopic(p[1])) return { page: 'topic', id: p[1], tab: p[2] || '', part: p[3] };
     return { page: 'home' };
   }
+  function shortName() {          // the guide's short name in the current language ([site] short, short_zh)
+    var st = site();
+    if (!st) return 'Marin KB';
+    return (UI.lang === 'zh' && st.short_zh) || st.short;
+  }
   function chrome() {
     document.documentElement.lang = UI.lang === 'zh' ? 'zh-CN' : 'en';
     var st = site();
     if (st) {                 // a guide's own name and start pages in the header
       var brand = document.querySelector('header .brand');
-      if (brand) brand.textContent = st.short;
+      if (brand) brand.textContent = shortName();
       var nav = document.getElementById('nav');
       if (nav && st.nav && !nav.dataset.siteNav) {
         nav.dataset.siteNav = '1';
@@ -166,10 +171,10 @@
     chrome();
     document.querySelectorAll('#nav a[data-r]').forEach(function (a) { a.classList.toggle('on', a.getAttribute('data-r') === (r.page === 'chat' ? 'chat' : 'kb')); });
     view.textContent = '';
-    if (r.page === 'chat') { view.appendChild(pageChat()); document.title = L('Ask & ideas', '提问和想法') + ' · ' + ((site() && site().short) || 'Marin KB'); return; }
+    if (r.page === 'chat') { view.appendChild(pageChat()); document.title = L('Ask & ideas', '提问和想法') + ' · ' + shortName(); return; }
     view.appendChild(M.page(r));
     var t = M.title(r);
-    document.title = (t ? t + ' · ' : '') + ((site() && site().short) || 'Marin KB');
+    document.title = (t ? t + ' · ' : '') + shortName();
   }
   function load() {
     M.configure({ lang: UI.lang, hooks: hooks, home: '#/kb', doc: function (id) { return '#/kb/doc/' + id; }, card: function (n) { return '#/kb/card/' + n; },
@@ -192,7 +197,7 @@
   setInterval(function () { status().then(function () { if (UI.ai && UI.ai.version) { if (seen && seen !== UI.ai.version) showUpdate(); seen = UI.ai.version; } }); }, 10 * 60 * 1000);
   function showUpdate() {
     if (document.getElementById('upd')) return;
-    var nm = (site() && site().short) || 'Marin KB';
+    var nm = shortName();
     document.body.appendChild(h('div', { id: 'upd', class: 'update-bar' }, L(nm + ' was updated. ', nm + ' 已更新。'), h('a', { href: location.href, text: L('Reload', '刷新'), onclick: function () { location.reload(); } })));
   }
   status().then(function () { seen = UI.ai && UI.ai.version; return load(); }).then(function () {

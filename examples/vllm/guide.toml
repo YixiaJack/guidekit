@@ -144,6 +144,7 @@ title = "Common confusions and pitfalls"
 
 [site]
 short = "vLLM, explained"
+short_zh = "vLLM 导读"
 name = {en = "vLLM, explained", zh = "vLLM 导读"}
 project = {name = "vLLM", url = "https://github.com/vllm-project/vllm"}
 lead = {en = "is the most widely used open-source engine for serving large language models, and its code is the thing worth learning. This guide takes one part of the engine per chapter and walks from the problem, to the mental model, to the actual code, with the design reasons from vLLM's own docs and RFCs. Every code excerpt is pinned to v0.34.0 and checked line by line; every quote is checked against its source. New to inference engines? Start with the five short beginner chapters.", zh = "是使用最广的开源大模型推理引擎，而它的代码本身就是最值得学的东西。这本导读每章讲引擎的一个部分：从要解决的问题、到理解它的思路、再到真实的代码，并附上 vLLM 自己的设计文档和 RFC 里的设计理由。每段代码摘录都固定在 v0.34.0，逐行核对；每条引文都和出处逐字核对。第一次接触推理引擎，可以先读五章简短的入门篇。"}

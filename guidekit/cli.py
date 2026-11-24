@@ -121,6 +121,8 @@ def cmd_build(a):
         print("jupyter-book not found: pip install 'guidekit[book]' (or into the guide's .venv)")
         return 2
     r = subprocess.run([str(jb), "build", str(g.book)])
+    if r.returncode == 0 and (g.book / "_extra").is_dir():     # an incremental build skips html_extra_path when no page changed
+        shutil.copytree(g.book / "_extra", g.book / "_build" / "html", dirs_exist_ok=True)
     if r.returncode or not a.pdf:
         return r.returncode
     r = subprocess.run([str(jb), "build", str(g.book), "--builder", "latex"])
