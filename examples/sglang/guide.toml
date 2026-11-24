@@ -7,6 +7,7 @@ audience = "beginners"
 root = "~/sglang-kb"
 words = [5000, 7000]
 max_code = 30
+review_model = "opus"
 
 [source]
 repo = "sgl-project/sglang"

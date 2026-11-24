@@ -63,8 +63,11 @@ def run(stage: str, prompt: str, cwd: Path, read_roots: list[Path], write_roots:
     system = (TEMPLATES / "security.md").read_text()
     cmd = [CLAUDE, "--restricted", "--strict-mcp-config", "--tools", TOOLS, "--settings", str(_settings()),
            "--model", MODELS.get(model, model), "--append-system-prompt", system]
-    for d in read_roots:
-        if d.resolve() != cwd.resolve():
+    added = set()
+    for d in [*read_roots, *write_roots]:     # Claude Code itself only lets an agent touch its cwd and --add-dir folders
+        r = d.resolve()
+        if r != cwd.resolve() and not r.is_relative_to(cwd.resolve()) and r not in added:
+            added.add(r)
             cmd += ["--add-dir", str(d)]
     cmd += ["-p", prompt, "--allowedTools", TOOLS, "--permission-mode", "dontAsk",
             "--no-session-persistence", "--output-format", "json"]

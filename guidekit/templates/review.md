@@ -23,6 +23,9 @@ The writing brief is below; everything in it still applies (sources, formats, ru
 7. **Tone.** Plain and precise; no hype, no claims about people's motives; they/them for anyone whose pronouns the
    sources do not state.
 
+Be thorough: open every source cited in the summary, the tables, the design-decision and pitfalls sections and check each
+paragraph there against it; this normally takes dozens of reads. A review that opens only a few sources is not a review.
+
 Fix problems with small edits. Do not rewrite correct sections, add topics, or lengthen the chapter except for a missing
 caveat or citation. Keep every evidence format intact.
 
