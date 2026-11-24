@@ -51,7 +51,23 @@ def numbers(body: str) -> Counter:
     t = re.sub(r"@[A-Za-z0-9_-]+", " ", t)                 # GitHub handles (checked separately)
     t = drop_list_markers(t)                               # ordered-list markers (not a wrapped line that starts "256. ")
     t = re.sub(r"(?<![\d.])\d{1,2}\s*月", " ", t)            # Chinese month number ("2026 年 4 月" for "April 2026"); days stay
+    t = scale_words(t)
     return Counter(n.replace(",", "") for n in re.findall(r"\d[\d,]*(?:\.\d+)?", t))
+
+
+SCALE = {"thousand": 10**3, "million": 10**6, "billion": 10**9, "trillion": 10**12,
+         "万亿": 10**12, "千亿": 10**11, "百亿": 10**10, "十亿": 10**9, "千万": 10**7, "百万": 10**6, "亿": 10**8, "万": 10**4, "千": 10**3,
+         "k": 10**3, "K": 10**3, "M": 10**6, "B": 10**9, "T": 10**12}
+
+
+def scale_words(t: str) -> str:
+    """"17 million", "17-million", "1700 万", "17 百万" and "17M" are the same number: write each as 17000000 before
+    counting, on both sides. Letter suffixes count only when attached (40B, 1.3B, 18T, 40k)."""
+    def one(m):
+        v = float(m.group(1).replace(",", "")) * SCALE[m.group(2) or m.group(3)]
+        return str(int(round(v))) if abs(v - round(v)) < 1e-6 else str(v)
+    t = re.sub(r"(\d[\d,]*(?:\.\d+)?)(?:[\s-]*(thousand|million|billion|trillion|万亿|千亿|百亿|十亿|千万|百万|亿|万|千)|([kKMBT])(?![A-Za-z0-9]))", one, t)
+    return t
 
 
 def english_runs(body: str) -> list[str]:

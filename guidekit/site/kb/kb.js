@@ -471,7 +471,7 @@
     var st = S();
     root.appendChild(h('h2', null, SL(st.name), h('span', { class: 'n', text: SL(st.stats) })));
     root.appendChild(h('div', { class: 'card' },
-      h('div', { class: 'lead' }, ext(st.project.url, st.project.name, 'marin-link'), ' ', SL(st.lead)),
+      h('div', { class: 'lead' }, ext(st.project.url, (zh() && st.project.name_zh) || st.project.name, 'marin-link'), ' ', SL(st.lead)),
       st.meta ? h('div', { class: 'meta', style: 'margin-top:8px' }, h('span', { text: SL(st.meta) })) : null,
       CFG.hooks.homeExtras ? CFG.hooks.homeExtras() : null));
     if (D.headline.length) root.appendChild(h('div', { class: 'card' }, h('h3', { text: SL(st.headline_title) }),

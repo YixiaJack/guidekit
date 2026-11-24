@@ -175,6 +175,11 @@ is machine-checked, proved by humans, quoted, or open. Lessons:
   "numbers added/missing" failure that survives three fix rounds: look at the English line first. Accept Chinese quote
   marks (`> “…”`) as quotes. Two private-site publishers (Marin's and guidekit's) must use the same rule for the
   site-wide CSP exclusion, or each one's run breaks the other's paths.
+- **Scale words are numbers.** "17 million" = "1700 万" = "17 百万" = "17M"; "40 billion tokens" = "40B token". Before the
+  checker normalised them, a translator wrote "一千七百万（17 million）" to pass, which mixes languages. Normalise every
+  scale form on both sides; letter suffixes only when attached to the digits (40B, not B200).
+- **Card blurbs are not typeset**: turn inline $…$ into plain symbols and never cut a blurb inside a formula. Project and
+  site names need a Chinese form too (`project.name_zh`, `short_zh`).
 - **Excerpt matching for updates needs the checker's rule:** a code block counts as an excerpt only when its next
   non-blank line is the `— Code:` line (diagrams are not excerpts), cut lines split it into pieces, and link texts can
   carry backticks. Test the matcher against the pinned checkout first: it must report zero changes there.

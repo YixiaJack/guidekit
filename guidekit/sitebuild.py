@@ -65,6 +65,34 @@ def summary_of(text: str) -> str:
     return t[:1].upper() + t[1:]
 
 
+TEX = {r"\\le": "≤", r"\\ge": "≥", r"\\leq": "≤", r"\\geq": "≥", r"\\cdot": "·", r"\\times": "×", r"\\infty": "∞",
+       r"\\varepsilon": "ε", r"\\epsilon": "ε", r"\\zeta": "ζ", r"\\rho": "ρ", r"\\sigma": "σ", r"\\gamma": "γ",
+       r"\\chi": "χ", r"\\Lambda": "Λ", r"\\psi": "ψ", r"\\pi": "π", r"\\ne": "≠", r"\\neq": "≠", r"\\to": "→",
+       r"\\approx": "≈", r"\\sum": "Σ", r"\\in": "∈"}
+
+
+def plain_math(t: str) -> str:
+    """Inline $...$ as plain text for card blurbs, which are not typeset: G(x)≤x^{1/2+ε} becomes G(x)≤x^(1/2+ε)."""
+    def one(m):
+        x = m.group(1)
+        for k, v in TEX.items():
+            x = re.sub(k + r"(?![A-Za-z])", v, x)
+        x = re.sub(r"\\(?:mathrm|operatorname|text|mathbf|tfrac|frac)\s*", "", x)
+        x = re.sub(r"\^\{([^{}]*)\}", r"^(\1)", x).replace("{", "").replace("}", "").replace("\\", "")
+        return x
+    return re.sub(r"\$([^$]+)\$", one, t)
+
+
+def blurb(t: str, n: int = 220) -> str:
+    t = plain_math(t)
+    if len(t) <= n:
+        return t
+    cut = t[:n]
+    if cut.count("$") % 2:                   # never stop inside an untypeset formula
+        cut = cut[:cut.rfind("$")]
+    return cut.rstrip() + "…"
+
+
 def clean_group(cap: str) -> str:
     cap = re.sub(r"^Deep dive\s*[—–-]\s*", "", cap)
     return cap[:1].upper() + cap[1:]
@@ -110,7 +138,7 @@ def build(g: Guide, lang: str) -> dict | None:
             group = zhmap.get(group, group)
         doc = {"id": cid, "title": title, "file": f"kb/{'ch' if lang == 'en' else 'ch_zh'}/{cid}.md", "rel": f"chapters/{cid}.md",
                "book": f"chapters/{cid}.html", "words": words(en_text), "topic": None if is_guide else cid, "part": None,
-               "kind": (("Start here" if lang == "en" else "从这里开始") if is_guide else None), "blurb": summary_of(text)[:220]}
+               "kind": (("Start here" if lang == "en" else "从这里开始") if is_guide else None), "blurb": blurb(summary_of(text))}
         if lang == "zh":
             doc["file_en"] = f"kb/ch/{cid}.md"
         docs.append(doc)
@@ -127,6 +155,27 @@ def build(g: Guide, lang: str) -> dict | None:
                      "zh": f"{len(topics)} 章深入篇 · {n_g} 章入门篇" + (f" · 对应 {g.source.get('repo', '')} {pin}" if pin else "")}
     return {"n": len(topics), "first": "", "last": "", "snapshot": pin, "npr": 0, "prs": 0, "headline": [], "topics": topics,
             "cards": [], "docs": docs, "site": site, "lang": lang}
+
+
+def display_cites(text: str, lang: str, cmap: dict) -> str:
+    """Citation keys such as `note draft.md` (what the checker reads) become readable linked names on the website
+    ([site.cite]: {"note draft.md": {en, zh, url}}). A source line that already links the source drops the key."""
+    if not cmap:
+        return text
+    keys = {k.split(" ", 1)[1]: v for k, v in cmap.items() if " " in k}
+    names = "|".join(re.escape(k) for k in sorted(keys, key=len, reverse=True))
+    word = r"(?:note|笔记|注释)\s*"
+    def link(m):
+        v = keys[m.group(1)]
+        return f"[{v.get(lang) or v['en']}]({v['url']})"
+    out = []
+    for line in text.split("\n"):
+        if re.match(r"\s*—\s*(Source|Table source|来源|表格来源)\s*[:：]", line) and "](" in line:
+            line = re.sub(r"\s*[（(]\s*`?" + word + r"(?:" + names + r")`?\s*[)）]", "", line)
+        line = re.sub(r"`" + word + r"(" + names + r")`", link, line)
+        line = re.sub(word + r"(" + names + r")", link, line)
+        out.append(line)
+    return "\n".join(out)
 
 
 def ensure_extra_path(g: Guide):
@@ -160,8 +209,9 @@ def run(g: Guide) -> str:
             shutil.rmtree(chd)
         chd.mkdir()
         base = g.book if lang == "en" else g.root / "book_zh"
+        cmap = (g.site or {}).get("cite", {})
         for doc in d["docs"]:
-            shutil.copy2(base / doc["rel"], chd / f"{doc['id']}.md")
+            (chd / f"{doc['id']}.md").write_text(display_cites((base / doc["rel"]).read_text(), lang, cmap))
         msgs.append(f"{lang}: {len(d['topics'])} topics, {len(d['docs'])} documents")
     ensure_extra_path(g)
     return "; ".join(msgs)
